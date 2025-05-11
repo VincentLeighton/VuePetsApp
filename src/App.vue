@@ -1,10 +1,8 @@
-<script setup lang="ts">
-import PetList from './components/PetList.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div id="app">
-    <PetList />
+    <RouterView />
   </div>
 </template>
 

@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue'
+import router from '@/router'
+import type { Pet } from '@/types/petsType'
+import { inject, ref, type Ref } from 'vue'
 
-type Pet = {
-  id: number
-  owner: string
-  imageUrl: string
-  favoriteFood: string
-  isFed: boolean
-}
-
-const emits = defineEmits(['add-pet'])
-
+const pets = inject('Pets') as Ref<Pet[]>
 const owner = ref('')
+const name = ref('')
+const age = ref('')
 const imageUrl = ref('')
 const favoriteFood = ref('')
 
@@ -20,14 +15,19 @@ const addPet = () => {
     const newPet: Pet = {
       id: Math.floor(Math.random() * 1000),
       owner: owner.value,
+      name: name.value,
+      age: Number(age.value),
       imageUrl: imageUrl.value,
       favoriteFood: favoriteFood.value,
       isFed: false,
     }
-    emits('add-pet', newPet)
+    pets.value.push(newPet)
     owner.value = ''
+    name.value = ''
+    age.value = ''
     imageUrl.value = ''
     favoriteFood.value = ''
+    router.push('/')
   }
 }
 </script>
@@ -41,8 +41,16 @@ const addPet = () => {
         <input type="text" id="owner" v-model="owner" required />
       </div>
       <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" v-model="name" required />
+      </div>
+      <div>
+        <label for="age">Age in years:</label>
+        <input type="text" id="age" v-model="age" required />
+      </div>
+      <div>
         <label for="imageUrl">Image URL:</label>
-        <input type="url" id="imageUrl" v-model="imageUrl" required />
+        <input type="text" id="imageUrl" v-model="imageUrl" required />
       </div>
       <div>
         <label for="favoriteFood">Favorite Food:</label>

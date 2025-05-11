@@ -1,38 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { Pet } from '@/types/petsType'
+import { ref, defineEmits, inject, type Ref } from 'vue'
 
-type Pet = {
-  id: number
-  owner: string
-  imageUrl: string
-  favoriteFood: string
-  isFed: boolean
-}
+defineEmits(['add-pet'])
 
-const pets = ref<Pet[]>([
-  {
-    id: 1,
-    owner: 'Alice',
-    imageUrl: 'https://example.com/dog.jpg',
-    favoriteFood: 'Bone',
-    isFed: true,
-  },
-  {
-    id: 2,
-    owner: 'Bob',
-    imageUrl: 'https://example.com/cat.jpg',
-    favoriteFood: 'Fish',
-    isFed: false,
-  },
-  {
-    id: 3,
-    owner: 'Charlie',
-    imageUrl: 'https://example.com/bird.jpg',
-    favoriteFood: 'Seeds',
-    isFed: true,
-  },
-])
-
+const pets = inject('Pets') as Ref<Pet[]>
 const sortKey = ref('')
 
 const sortPets = () => {
@@ -40,9 +12,32 @@ const sortPets = () => {
     pets.value.sort((a, b) => Number(b.isFed) - Number(a.isFed))
   } else if (sortKey.value === 'isNotFed') {
     pets.value.sort((a, b) => Number(a.isFed) - Number(b.isFed))
+  } else if (sortKey.value === 'owner') {
+    pets.value.sort((a, b) => a.owner.localeCompare(b.owner))
   } else {
     pets.value.sort((a, b) => a.id - b.id)
   }
+}
+
+const deletePet = (id: number) => {
+  const index = pets.value.findIndex((pet) => pet.id === id)
+  if (index !== -1) {
+    pets.value.splice(index, 1)
+  }
+}
+
+const download = () => {
+  const text = JSON.stringify(pets.value, null, 2)
+  const filename = 'pets.json'
+  const element = document.createElement('a')
+  element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text))
+  element.setAttribute('download', filename)
+
+  element.style.display = 'none'
+  document.body.appendChild(element)
+
+  element.click()
+  document.body.removeChild(element)
 }
 </script>
 
@@ -54,6 +49,7 @@ const sortPets = () => {
       <option value="">Unsorted</option>
       <option value="isFed">Is Fed</option>
       <option value="isNotFed">Is Not Fed</option>
+      <option value="owner">Owner</option>
     </select>
     <RouterLink to="/add-pet">
       <button>Add Pet</button>
@@ -63,11 +59,24 @@ const sortPets = () => {
         <img :src="pet.imageUrl" :alt="`Image of ${pet.owner}'s pet`" class="pet-image" />
         <div class="pet-details">
           <p><strong>Owner:</strong> {{ pet.owner }}</p>
+          <p><strong>Name:</strong> {{ pet.name }}</p>
+          <p><strong>Age:</strong> {{ pet.age }} years old</p>
           <p><strong>Favorite Food:</strong> {{ pet.favoriteFood }}</p>
           <p><strong>Is Fed:</strong> {{ pet.isFed ? 'Yes' : 'No' }}</p>
+          <button
+            @click="
+              () => {
+                pet.isFed = !pet.isFed
+              }
+            "
+          >
+            {{ pet.isFed ? 'Unfeed' : 'Feed' }}
+          </button>
+          <button @click="deletePet(pet.id)">Delete</button>
         </div>
       </li>
     </ul>
+    <button @click="download">Download Pets</button>
   </div>
 </template>
 
