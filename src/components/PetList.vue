@@ -24,6 +24,7 @@ const deletePet = (id: number) => {
   if (index !== -1) {
     pets.value.splice(index, 1)
   }
+  console.log(pets)
 }
 
 const download = () => {

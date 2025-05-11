@@ -55,10 +55,9 @@ describe('PetList.vue', () => {
     await wrapper.find('#sort').setValue('owner')
     await wrapper.find('#sort').trigger('change')
 
-    const petOwners = wrapper
-      .findAll('.pet-details p strong:nth-child(1)')
-      .map((node) => node.text())
-    expect(petOwners).toEqual(['Alice', 'Bob'])
+    const petOwners = wrapper.findAll('.pet-details p:nth-child(1)').map((node) => node.text())
+
+    expect(petOwners).toEqual(['Owner: Alice', 'Owner: Bob'])
   })
 
   it('deletes a pet', async () => {
@@ -70,7 +69,13 @@ describe('PetList.vue', () => {
       },
     })
 
-    await wrapper.findAll('button').at(1)?.trigger('click')
+    const deleteButton = wrapper
+      .findAll('button')
+      .find((button: { text: () => string }) => button.text() === 'Delete')
+    if (!deleteButton) {
+      throw new Error('Delete button not found')
+    }
+    await deleteButton.trigger('click')
 
     expect(mockPets.value.length).toBe(1)
     expect(wrapper.text()).not.toContain('Buddy')
@@ -86,7 +91,13 @@ describe('PetList.vue', () => {
     })
 
     const createElementSpy = vi.spyOn(document, 'createElement')
-    await wrapper.find('button:last-of-type').trigger('click')
+    const downlaodButton = wrapper
+      .findAll('button')
+      .find((button: { text: () => string }) => button.text() === 'Download Pets')
+    if (!downlaodButton) {
+      throw new Error('Delete button not found')
+    }
+    await downlaodButton.trigger('click')
 
     expect(createElementSpy).toHaveBeenCalledWith('a')
   })
