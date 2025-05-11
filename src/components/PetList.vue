@@ -55,6 +55,9 @@ const sortPets = () => {
       <option value="isFed">Is Fed</option>
       <option value="isNotFed">Is Not Fed</option>
     </select>
+    <RouterLink to="/add-pet">
+      <button>Add Pet</button>
+    </RouterLink>
     <ul>
       <li v-for="pet in pets" :key="pet.id" class="pet-item">
         <img :src="pet.imageUrl" :alt="`Image of ${pet.owner}'s pet`" class="pet-image" />
