@@ -32,11 +32,29 @@ const pets = ref<Pet[]>([
     isFed: true,
   },
 ])
+
+const sortKey = ref('')
+
+const sortPets = () => {
+  if (sortKey.value === 'isFed') {
+    pets.value.sort((a, b) => Number(b.isFed) - Number(a.isFed))
+  } else if (sortKey.value === 'isNotFed') {
+    pets.value.sort((a, b) => Number(a.isFed) - Number(b.isFed))
+  } else {
+    pets.value.sort((a, b) => a.id - b.id)
+  }
+}
 </script>
 
 <template>
   <div class="pet-list">
     <h1>Pet List</h1>
+    <label for="sort">Sort by:</label>
+    <select id="sort" v-model="sortKey" @change="sortPets">
+      <option value="">Unsorted</option>
+      <option value="isFed">Is Fed</option>
+      <option value="isNotFed">Is Not Fed</option>
+    </select>
     <ul>
       <li v-for="pet in pets" :key="pet.id" class="pet-item">
         <img :src="pet.imageUrl" :alt="`Image of ${pet.owner}'s pet`" class="pet-image" />
